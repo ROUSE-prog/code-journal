@@ -23,21 +23,18 @@ const logEntry = async (req, res) => {
 
 // Fetch recent summaries
 const getSummaries = async (req, res) => {
-  const userId = parseInt(req.query.userId, 10); // Convert to integer
-  console.log('Parsed userId:', userId); // Log parsed userId
-
+  const userId = req.user.userId; // Access the userId from the JWT token
   try {
     const summaries = await pool.query(
       'SELECT * FROM entries WHERE user_id = $1 ORDER BY created_at DESC LIMIT 10',
       [userId]
     );
-    console.log('Summaries found:', summaries.rows); // Log retrieved rows
     res.json(summaries.rows);
   } catch (err) {
-    console.error('Error fetching summaries:', err.message);
-    res.status(500).json({ error: 'Error fetching summaries', details: err.message });
+    res.status(500).json({ error: 'Error fetching summaries' });
   }
 };
+
 
 
 module.exports = { logEntry, getSummaries };
